@@ -14,15 +14,25 @@ class TestBurger:
         burger.set_buns(bun)
         assert burger.bun == bun
 
-    def test_add_ingredient(self):
+    def test_add_ingredient_name(self):
+        burger = Burger()
+        mock_ingredient = Mock()
+        mock_ingredient.get_name.return_value = 'cutlet'
+        burger.add_ingredient(mock_ingredient)
+        assert burger.ingredients[0].get_name() == 'cutlet'
+
+    def test_add_ingredient_price(self):
         burger = Burger()
         mock_ingredient = Mock()
         mock_ingredient.get_price.return_value = 100
-        mock_ingredient.get_name.return_value = 'cutlet'
+        burger.add_ingredient(mock_ingredient)
+        assert burger.ingredients[0].get_price() == 100
+
+    def test_add_ingredient_type(self):
+        burger = Burger()
+        mock_ingredient = Mock()
         mock_ingredient.get_type.return_value = INGREDIENT_TYPE_FILLING
         burger.add_ingredient(mock_ingredient)
-        assert burger.ingredients[0].get_name() == 'cutlet'
-        assert burger.ingredients[0].get_price() == 100
         assert burger.ingredients[0].get_type() == INGREDIENT_TYPE_FILLING
 
     def test_remove_ingredient(self):
@@ -51,19 +61,23 @@ class TestBurger:
         expected_receipt = '''(==== red bun ====)\n= sauce hot sauce =\n= sauce sour cream =\n= sauce chili sauce =\n(==== red bun ====)\n\nPrice: 1200'''
         assert burger.get_receipt() == expected_receipt
 
-    def test_move_ingredient(self):
+    def test_move_ingredient_order(self):
         burger = Burger()
         mock_ingredient_one = Mock()
-        mock_ingredient_one.get_price.return_value = 100
         mock_ingredient_one.get_name.return_value = 'cutlet'
-        mock_ingredient_one.get_type.return_value = INGREDIENT_TYPE_FILLING
         mock_ingredient_two = Mock()
-        mock_ingredient_two.get_price.return_value = 300
         mock_ingredient_two.get_name.return_value = 'sausage'
-        mock_ingredient_two.get_type.return_value = INGREDIENT_TYPE_FILLING
+        burger.add_ingredient(mock_ingredient_one)
+        burger.add_ingredient(mock_ingredient_two)
+        burger.move_ingredient(0, 1)
+        assert burger.ingredients[0].get_name() == 'sausage'
+        assert burger.ingredients[1].get_name() == 'cutlet'
+
+    def test_move_ingredient_count(self):
+        burger = Burger()
+        mock_ingredient_one = Mock()
+        mock_ingredient_two = Mock()
         burger.add_ingredient(mock_ingredient_one)
         burger.add_ingredient(mock_ingredient_two)
         burger.move_ingredient(0, 1)
         assert len(burger.ingredients) == 2
-        assert burger.ingredients[0] == mock_ingredient_two
-        assert burger.ingredients[1] == mock_ingredient_one
